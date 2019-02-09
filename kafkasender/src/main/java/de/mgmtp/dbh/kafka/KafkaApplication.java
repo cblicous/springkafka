@@ -3,6 +3,7 @@ package de.mgmtp.dbh.kafka;
 
     import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+    import java.util.stream.IntStream;
 
     import org.apache.commons.lang3.RandomStringUtils;
     import org.springframework.beans.factory.annotation.Autowired;
@@ -29,15 +30,17 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
             ConfigurableApplicationContext context = SpringApplication.run(KafkaApplication.class, args);
 
             MessageProducer producer = context.getBean(MessageProducer.class);
-            MessageListener listener = context.getBean(MessageListener.class);
 
             /*
              * Sending message to 'order' topic. This will send
              * and recieved a java object with the help of
              * greetingKafkaListenerContainerFactory.
              */
-            producer.sendOrderMessage(new Order(RandomStringUtils.randomAlphanumeric(10)));
-            listener.orderLatch.await(10, TimeUnit.SECONDS);
+            IntStream.rangeClosed(1, 8)
+                    .forEach(i ->{
+                producer.sendOrderMessage(new Order(RandomStringUtils.randomAlphanumeric(10)));
+            }
+            );
 
             context.close();
         }
@@ -47,10 +50,6 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
             return new MessageProducer();
         }
 
-        @Bean
-        public MessageListener messageListener() {
-            return new MessageListener();
-        }
 
         public static class MessageProducer {
 
@@ -89,20 +88,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
             }
         }
 
-        public static class MessageListener {
 
-
-
-            private CountDownLatch orderLatch = new CountDownLatch(1);
-
-
-            @KafkaListener(topics = "${order.topic.name}", containerFactory = "orderKafkaListenerContainerFactory")
-            public void orderListener(Order order) {
-                System.out.println("Recieved new Order message: " + order);
-                this.orderLatch.countDown();
-            }
-
-        }
 
     }
 
