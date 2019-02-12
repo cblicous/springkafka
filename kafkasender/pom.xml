@@ -20,38 +20,39 @@
         </dependencies>
     </dependencyManagement>
 
-        <dependencies>
+    <dependencies>
 
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
 
-            <dependency>
-                <groupId>org.springframework.kafka</groupId>
-                <artifactId>spring-kafka</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
 
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
 
-          <dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.8.1</version>
         </dependency>
 
-        </dependencies>
+    </dependencies>
 
 
     <properties>
-            <spring-kafka.version>2.2.3.RELEASE</spring-kafka.version>
-            <jackson.version>2.9.7</jackson.version>
-            <rest-assured.version>3.1.0</rest-assured.version>
-            <spring-boot.version>2.1.2.RELEASE</spring-boot.version>
-        </properties>
+        <spring-kafka.version>2.2.3.RELEASE</spring-kafka.version>
+        <jackson.version>2.9.7</jackson.version>
+        <rest-assured.version>3.1.0</rest-assured.version>
+        <spring-boot.version>2.1.2.RELEASE</spring-boot.version>
+        <docker.image.prefix>dbh</docker.image.prefix>
+    </properties>
 
     <build>
         <pluginManagement>
@@ -72,6 +73,14 @@
                     <configuration>
                         <mainClass>${start-class}</mainClass>
                         <!-- this is necessary as we're not using the Boot parent -->
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>dockerfile-maven-plugin</artifactId>
+                    <version>[1.4.9,)</version>
+                    <configuration>
+                        <repository>${docker.image.prefix}/${project.artifactId}</repository>
                     </configuration>
                 </plugin>
             </plugins>
