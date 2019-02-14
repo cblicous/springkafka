@@ -7,6 +7,7 @@
     <groupId>de.mgmtp.dbh</groupId>
     <artifactId>kafkareceiver</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <dependencyManagement>
         <dependencies>
@@ -52,6 +53,7 @@
         <rest-assured.version>3.1.0</rest-assured.version>
         <spring-boot.version>2.1.2.RELEASE</spring-boot.version>
         <docker.image.prefix>dbh</docker.image.prefix>
+        <dockerfile-maven-version>1.4.10</dockerfile-maven-version>
     </properties>
 
     <build>
@@ -78,9 +80,22 @@
                 <plugin>
                     <groupId>com.spotify</groupId>
                     <artifactId>dockerfile-maven-plugin</artifactId>
-                    <version>1.4.10</version>
+                    <version>${dockerfile-maven-version}</version>
+                    <executions>
+                        <execution>
+                            <id>default</id>
+                            <goals>
+                                <goal>build</goal>
+                                <goal>push</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                     <configuration>
-                        <repository>${docker.image.prefix}/${project.artifactId}</repository>
+                        <repository>dbh/kafka</repository>
+                        <tag>${project.version}</tag>
+                        <buildArgs>
+                            <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                        </buildArgs>
                     </configuration>
                 </plugin>
             </plugins>
